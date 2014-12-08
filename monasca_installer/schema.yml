@@ -1,0 +1,5 @@
+- name: Configures the Monasca schema
+  hosts: monasca_master
+  sudo: yes
+  roles:
+    - {role: tkuhlman.monasca-schema, tags: [schema]}

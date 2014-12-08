@@ -1,0 +1,13 @@
+- hosts: monasca
+  sudo: yes
+  tasks:
+    - name: apt-get update
+      apt: update_cache=yes
+  roles:
+    - role: bennojoy.network_interface
+    - {role: bennojoy.ntp, tags: [ntp]}
+
+- include: monasca_deps.yml
+- include: schema.yml
+- include: monasca.yml
+- include: agent_status.yml

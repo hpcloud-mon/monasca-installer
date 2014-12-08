@@ -1,0 +1,28 @@
+- name: Installs the Monasca DBs, kafka and other core dependencies
+  hosts: monasca
+  sudo: yes
+  serial: 1  # Prevents more than one box from restarting at a time.
+  pre_tasks:
+    # The percona apt server doesn't recognize cattleprod so I need to change things so ansible_distribution_release is discovered as  wheezy
+    - name: Change the release to wheezy
+      replace: dest=/etc/os-release regexp='cattleprod' replace='wheezy'
+      register: dist_release
+    - name: Reload facts
+      setup:
+      when: dist_release|changed
+  tasks:
+    - name: Install postfix, needed by notification engine
+      apt: name=postfix state=present
+    - name: Install pip from easy_install
+      easy_install: name=pip
+    - name: Install packages to allow pip to compile extensions as needed
+      apt: name={{item}} state=present
+      with_items:
+        - python-dev
+        - libssl-dev
+        - libcrypto++-dev
+  roles:
+    - {role: tkuhlman.zookeeper, tags: [zookeeper]}
+    - {role: tkuhlman.kafka, tags: [kafka]}
+    - {role: stympy.influxdb, tags: [influxdb]}
+    - {role: tkuhlman.percona, percona_package: percona-xtradb-cluster-56, tags: [mysql, percona]}

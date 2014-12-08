@@ -1,0 +1,42 @@
+- name: Installs core Monasca daemons
+  hosts: monasca
+  sudo: yes
+  serial: 1  # Prevents more than one box from restarting at a time.
+  roles:
+    - {role: tkuhlman.monasca-api,
+       influxdb_user: "{{api_influxdb_user}}",
+       influxdb_password: "{{api_influxdb_password}}",
+       mysql_user: "{{api_mysql_user}}",
+       mysql_password: "{{api_mysql_password}}",
+       tags: [api]}
+    - {role: tkuhlman.monasca-persister,
+       kafka_uri: "{{kafka_hosts}}",
+       influxdb_user: "{{persister_influxdb_user}}",
+       influxdb_password: "{{persister_influxdb_password}}",
+       tags: [persister]}
+    - {role: tkuhlman.monasca-notification,
+       mysql_user: "{{notification_mysql_user}}",
+       mysql_password: "{{notification_mysql_password}}",
+       tags: [notification]}
+    - {role: tkuhlman.monasca-agent, tags: [agent]}
+    - {role: tkuhlman.storm, tags: [storm]}
+    - {role: tkuhlman.openstack-horizon, keystone_hostname: "{{ keystone_host }}", tags: [horizon, ui]}
+    - {role: tkuhlman.monasca-ui, monasca_api_url: 'http://127.0.0.1:8080/v2.0', tags: [ui]}
+  tasks:
+    # There is a mismatch in hLinux between the horizon package and the django package, horizon is setup for django 1.6 but 1.7 is installed
+    # this is the fix until a new hLinux package comes out.
+    - name: Update django imports
+      lineinfile: dest=/usr/share/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi
+        regexp='import django.core.*' line='import django.core.wsgi'
+    - name: Update django application call
+      lineinfile: dest=/usr/share/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi
+        regexp='application = django.core.*' line='application = django.core.wsgi.get_wsgi_application()'
+
+- name: Install Monasca Thresh
+  hosts: monasca_master
+  sudo: yes
+  roles:
+    - {role: tkuhlman.monasca-thresh,
+       mysql_user: "{{thresh_mysql_user}}",
+       mysql_password: "{{thresh_mysql_password}}",
+       tags: [thresh]}

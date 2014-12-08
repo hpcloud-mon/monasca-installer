@@ -11,9 +11,6 @@ Installs monasca using ansible.
 git clone https://github.com/hpcloud-mon/monasca-installer
 ```
 
-## Install Ansible
-Version 1.7.2
-
 ## Install ansible and download the monasca roles
 #### Linux (Ubuntu)
 ```
@@ -24,6 +21,7 @@ ansible-galaxy install -r ansible_roles -p ./roles -f
 
 # Using the installer
 
-## Modify the installer_config
+## Modify the monasca_config.yml
+
 
 ## Run the installer 

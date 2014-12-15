@@ -1,0 +1,226 @@
+# Here is the basic structure of this file.
+#
+# global:
+# clusters:
+#   - cluster_name: "unique-cluster-name"
+#     # cluster-wide parameters go here
+#     master_config:
+#       # configuration options for the master node
+#     workers_config:
+#       # configuration options for worker nodes
+#     hosts:
+#     - hostname: "unique-host-name"
+#       ...parameters for each host...
+#
+# Random passwords can be generated on request throughout the configuration.
+# To insert a random password at any point, use this string:  PLEASE-GENERATE
+
+
+global:
+  # Paths used by the installed version of Horizon
+  dashboard_path: /usr/share/openstack-dashboard/openstack_dashboard/
+  grafana_repo_dir: /opt/grafana/
+  grafana_dest: /usr/share/openstack-dashboard/static/grafana
+  panel_dest_path: /usr/share/openstack-dashboard/monitoring
+
+  # SSL stuff, if enabled, goes here. Required parameters for SSL are...
+  # cacert_src, cacert_name
+  # mysql_ssl_ca, mysql_ssl_cert, mysql_ssl_cert_src, mysql_ssl_key, mysql_ssl_key_src, mysql_ssl
+  # influxdb_ssl_certificate, influxdb_ssl_certificate_src
+
+clusters:
+  - cluster_name: monasca1
+    # Load balanced vips
+    influxdb_url: https://mon-ae1test-monasca01.useast.hpcloud.net:8086
+    monasca_api_url: https://mon-ae1test-monasca02.useast.hpcloud.net:8080/v2.0
+    mysql_host: mon-ae1test-monasca02.useast.hpcloud.net
+
+    # API settings
+    api_region: useast
+    api_influxdb_user: mon_api
+    api_influxdb_password: PLEASE-GENERATE
+    api_mysql_user: monapi
+    api_mysql_password: PLEASE-GENERATE
+
+    keystone_admin: admin
+    keystone_admin_password: pass1234
+    keystone_admin_token: ADMINTOKEN
+    keystone_project_admin: monasca-agent
+    keystone_project_admin_password: pass1234
+    keystone_host: 10.22.156.19
+    keystone_url: http://10.22.156.19:35357/v3
+    monasca_agent:
+      user: monasca-agent
+      password: PLEASE-GENERATE
+      project: test
+      service: monitoring
+
+    mysql_root_password: PLEASE-GENERATE
+    notification_mysql_user: notification
+    notification_mysql_password: PLEASE-GENERATE
+    persister_influxdb_user: mon_persister
+    persister_influxdb_password: PLEASE-GENERATE
+    smtp_host: localhost
+    thresh_mysql_user: thresh
+    thresh_mysql_password: PLEASE-GENERATE
+    wsrep_cluster_name: monasca
+
+    influxdb_replication_factor: 3
+    influxdb_version: 0.8.1
+    influxdb_raft_port: 9090
+
+# The ports are not written to a config file directly, but used by the generator
+    zookeeper_client_port: 2181
+    kafka_client_port: 9092
+
+    master_config:
+      # Enable/disable services
+      storm_nimbus_enabled: true
+      storm_supervisor_enabled: false
+
+      # Schema settings
+      influxdb_users:
+        mon_api: '{{api_influxdb_password}}'
+        mon_persister: '{{persister_influxdb_password}}'
+      kafka_topics:
+        metrics: { replicas: 3, partitions: 64 }
+        events: { replicas: 3, partitions: 12 }
+        raw-events: { replicas: 3, partitions: 12 }
+        transformed-events: { replicas: 3, partitions: 12 }
+        alarm-state-transitions: { replicas: 3, partitions: 12 }
+        alarm-notifications: { replicas: 3, partitions: 12 }
+      mysql_users:
+        notification: '{{notification_mysql_password}}'
+        monapi: '{{api_mysql_password}}'
+        thresh: '{{thresh_mysql_password}}'
+
+        # Other settings
+        influxdb:
+          version: '{{influxdb_version}}'
+          raft_port: '{{influxdb_raft_port}}'
+          seed_servers: []
+          replication_factor: '{{influxdb_replication_factor}}'
+        influxdb_retention_policy: "365d"
+        influxdb_shard_duration: "7d"
+        percona_master_node: true
+
+    workers_config:
+      # Enable/disable services
+      storm_nimbus_enabled: false
+      storm_supervisor_enabled: true
+
+      # Other settings
+      influxdb:
+        version: '{{influxdb_version}}'
+        raft_port: '{{influxdb_raft_port}}'
+        replication_factor: '{{influxdb_replication_factor}}'
+
+    hosts:
+      - hostname: mon-ae1test-monasca01.useast.hpcloud.net
+        internal_ip: 10.22.156.11
+        kafka_id: 0
+      - hostname: mon-ae1test-monasca02.useast.hpcloud.net
+        internal_ip: 10.22.156.12
+        kafka_id: 1
+      - hostname: mon-ae1test-monasca03.useast.hpcloud.net
+        internal_ip: 10.22.156.13
+        kafka_id: 2
+
+
+
+  - cluster_name: monasca2
+    # Load balanced vips
+    influxdb_url: https://mon-ae1test-monasca04.useast.hpcloud.net:8086
+    monasca_api_url: https://mon-ae1test-monasca04.useast.hpcloud.net:8080/v2.0
+    mysql_host: mon-ae1test-monasca04.useast.hpcloud.net
+
+    # API settings
+    api_region: useast
+    api_influxdb_user: mon_api
+    api_influxdb_password: PLEASE-GENERATE
+    api_mysql_user: monapi
+    api_mysql_password: PLEASE-GENERATE
+
+    keystone_admin: admin
+    keystone_admin_password: pass1234
+    keystone_admin_token: ADMINTOKEN
+    keystone_project_admin: monasca-agent
+    keystone_project_admin_password: pass1234
+    keystone_host: 10.22.156.20
+    keystone_url: http://10.22.156.20:35357/v3
+    monasca_agent:
+      user: monasca-agent
+      password: PLEASE-GENERATE
+      project: test
+      service: monitoring
+
+    mysql_root_password: PLEASE-GENERATE
+    notification_mysql_user: notification
+    notification_mysql_password: PLEASE-GENERATE
+    persister_influxdb_user: mon_persister
+    persister_influxdb_password: PLEASE-GENERATE
+    smtp_host: localhost
+    thresh_mysql_user: thresh
+    thresh_mysql_password: PLEASE-GENERATE
+    wsrep_cluster_name: monasca
+
+    influxdb_replication_factor: 3
+    influxdb_version: 0.8.1
+    influxdb_raft_port: 9090
+
+# The ports are not written to a config file directly, but used by the generator
+    zookeeper_client_port: 2181
+    kafka_client_port: 9092
+
+    master_config:
+      # Enable/disable services
+      storm_nimbus_enabled: true
+      storm_supervisor_enabled: false
+
+      # Schema settings
+      influxdb_users:
+        mon_api: '{{api_influxdb_password}}'
+        mon_persister: '{{persister_influxdb_password}}'
+      kafka_topics:
+        metrics: { replicas: 3, partitions: 64 }
+        events: { replicas: 3, partitions: 12 }
+        raw-events: { replicas: 3, partitions: 12 }
+        transformed-events: { replicas: 3, partitions: 12 }
+        alarm-state-transitions: { replicas: 3, partitions: 12 }
+        alarm-notifications: { replicas: 3, partitions: 12 }
+      mysql_users:
+        notification: '{{notification_mysql_password}}'
+        monapi: '{{api_mysql_password}}'
+        thresh: '{{thresh_mysql_password}}'
+
+        # Other settings
+        influxdb:
+          version: '{{influxdb_version}}'
+          raft_port: '{{influxdb_raft_port}}'
+          seed_servers: []
+          replication_factor: '{{influxdb_replication_factor}}'
+        influxdb_retention_policy: "365d"
+        influxdb_shard_duration: "7d"
+        percona_master_node: true
+
+    workers_config:
+      # Enable/disable services
+      storm_nimbus_enabled: false
+      storm_supervisor_enabled: true
+
+      # Other settings
+      influxdb:
+        version: '{{influxdb_version}}'
+        raft_port: '{{influxdb_raft_port}}'
+        replication_factor: '{{influxdb_replication_factor}}'
+
+    hosts:
+      - hostname: mon-ae1test-monasca04.useast.hpcloud.net
+        internal_ip: 10.22.156.14
+        kafka_id: 0
+      - hostname: mon-ae1test-monasca05.useast.hpcloud.net
+        internal_ip: 10.22.156.15
+        kafka_id: 1
+      - hostname: mon-ae1test-monasca05.useast.hpcloud.net
+        internal_ip: 10.22.156.16
+        kafka_id: 2

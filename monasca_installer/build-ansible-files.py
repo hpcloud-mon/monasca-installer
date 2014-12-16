@@ -28,7 +28,7 @@ import yaml
 def generate_password():
     '''Generate a reasonably randomized password'''
     length = 24
-    chars = string.ascii_letters + string.digits + '!@#$%^&*()'
+    chars = string.ascii_letters + string.digits + '-_.~'
     random.seed = (os.urandom(1024))
     return ''.join(random.choice(chars) for i in range(length))
 
@@ -36,91 +36,72 @@ def generate_password():
 class AnsibleConfigGen(object):
     '''Read a site config and use it to build Ansible host and group files'''
 
-    def get_parser(self):
-        parser = argparse.ArgumentParser(description='Generate Ansible files from a YAML config template')
-        parser.add_argument('input_file', help='input config file (YAML)')
-        return parser
+    def __init__(self, config_file):
+        self.config_file = config_file
 
-    def main(self, argv):
+    def run(self):
         '''Read config input from the command line and build Ansible files'''
-        parser = self.get_parser()
-        (args) = parser.parse_args(argv)
 
         try:
-            with open(args.input_file, 'r') as config_yaml:
+            with open(self.config_file, 'r') as config_yaml:
                 config = yaml.safe_load(config_yaml)
         except IOError as e:
-            print("Unable to open file {}, {}".format(args.input_file, e))
-            sys.exit(1)
+            print("Unable to open file {}, {}".format(self.config_file, e))
+            return
 
-        # Zero out hosts file
-        self.save_hosts(initialize=True)
+        # Extract sections out of the config, to be written to other files
+        hosts = config.pop('hosts')
+        master_config = config.pop('master_config')
+        workers_config = config.pop('workers_config')
 
-        # Write out 'all' group_vars
-        self.save_global(config['global'])
+        # Initialize the various required host list variables
+        for key in ['kafka_hosts', 'zookeeper_hosts']:
+            config[key] = ""
+        config['zookeeper_servers'] = {}
+        config['wsrep_cluster_hosts'] = []
+        workers_config['influxdb']['seed_servers'] = []
 
-        for cluster in config['clusters']:
-            # Extract sections out of the cluster, to be written to other files
-            cluster_hosts = cluster.pop('hosts')
-            master_config = cluster.pop('master_config')
-            workers_config = cluster.pop('workers_config')
+        # Build required host lists out of 'hosts'
+        for host in hosts:
+            # Append to lists
+            config['kafka_hosts'] = "{},{}:{}".format(config['kafka_hosts'],
+                                                      host['internal_ip'],
+                                                      config['kafka_client_port'])
+            config['zookeeper_hosts'] = "{},{}:{}".format(config['zookeeper_hosts'],
+                                                          host['internal_ip'],
+                                                          config['zookeeper_client_port'])
 
-            # Initialize the various required host list variables
-            for key in ['kafka_hosts', 'zookeeper_hosts']:
-                cluster[key] = ""
-            cluster['zookeeper_servers'] = {}
-            cluster['wsrep_cluster_hosts'] = []
-            workers_config['influxdb']['seed_servers'] = []
+            config['zookeeper_servers'][host['internal_ip']] = host['kafka_id']
+            config['wsrep_cluster_hosts'].append(host['internal_ip'])
+            workers_config['influxdb']['seed_servers'].append(host['internal_ip'])
 
-            # Build required host lists out of cluster_hosts
-            for host in cluster_hosts:
-                # Append to lists
-                cluster['kafka_hosts'] = "{},{}:{}".format(cluster['kafka_hosts'],
-                                                           host['internal_ip'],
-                                                           cluster['kafka_client_port'])
-                cluster['zookeeper_hosts'] = "{},{}:{}".format(cluster['zookeeper_hosts'],
-                                                               host['internal_ip'],
-                                                               cluster['zookeeper_client_port'])
+        # Remove leading commas in the text string lists
+        for key in ['kafka_hosts', 'zookeeper_hosts']:
+            config[key] = config[key].lstrip(',')
 
-                cluster['zookeeper_servers'][host['internal_ip']] = host['kafka_id']
-                cluster['wsrep_cluster_hosts'].append(host['internal_ip'])
-                workers_config['influxdb']['seed_servers'].append(host['internal_ip'])
+        # Remove kafka_client_port and zookeeper_client_port; no longer needed
+        for entry in ['kafka_client_port', 'zookeeper_client_port']:
+            del config[entry]
 
-            # Remove leading commas in the text string lists
-            for key in ['kafka_hosts', 'zookeeper_hosts']:
-                cluster[key] = cluster[key].lstrip(',')
+        # Use the first host as nimbus_host
+        config['nimbus_host'] = hosts[0]['internal_ip']
 
-            # Use the first host for nimbus_host
-            cluster['nimbus_host'] = cluster_hosts[0]['internal_ip']
+        # Build the files in group_vars/
+        self.save_group(config, 'monasca')
+        self.save_group(master_config, "monasca_master")
+        self.save_group(workers_config, "monasca_workers")
 
-            # Build clusters in group_vars/
-            self.save_group(cluster, cluster['cluster_name'])
-            self.save_group(master_config,
-                            "{}_master".format(cluster['cluster_name']))
-            self.save_group(workers_config,
-                            "{}_workers".format(cluster['cluster_name']))
+        # Build the files in host_vars/
+        for host in hosts:
+            self.save_hostvar(host)
 
-            # Build files in host_vars/
-            for host in cluster_hosts:
-                self.save_hostvar(host)
-
-            # Write hosts to the 'hosts' file (per cluster), first is master
-            self.save_hosts("{}_master".format(cluster['cluster_name']),
-                            cluster_hosts[0]['hostname'])
-            self.save_hosts("{}_workers".format(cluster['cluster_name']),
-                            "\n".join(h['hostname'] for h in cluster_hosts[1:]))
-
-            self.save_hosts("{}:children".format(cluster['cluster_name']),
-                            "{0}_master\n{0}_workers".format(cluster['cluster_name']))
-
-        # Continue building hosts file (general)
-        cluster_names = [c['cluster_name'] for c in config['clusters']]
-        self.save_hosts("monasca:children",
-                        "\n".join(cluster_names))
-        self.save_hosts("monasca_master:children",
-                        "\n".join(["{}_master".format(n) for n in cluster_names]))
-        self.save_hosts("monasca_workers:children",
-                        "\n".join(["{}_workers".format(n) for n in cluster_names]))
+        # Write hosts to the 'hosts' file.  First host is the master.
+        hosts_data = {}
+        hosts_data['monasca_master'] = hosts[0]['hostname']
+        hosts_data['monasca_workers'] = "\n".join(h['hostname']
+                                                  for h in hosts[1:])
+        hosts_data['monasca:children'] = "monasca_master\nmonasca_workers"
+        self.save_hosts(hosts_data)
 
     def write_yaml(self, filename, data):
         '''Create parent directory if needed, and write out YAML to a file'''
@@ -131,7 +112,6 @@ class AnsibleConfigGen(object):
             # Ignore errno 17, directory already exists
             if e.errno != 17:
                 print("Error creating group_vars directory: {}".format(e))
-                sys.exit(1)
 
         try:
             with open(filename, 'w') as output_file:
@@ -139,13 +119,6 @@ class AnsibleConfigGen(object):
             return True
         except OSError as e:
             print("Error writing to {}: {}".format(filename, e))
-            sys.exit(1)
-
-    def save_global(self, global_section):
-        '''Write the group_vars/all file'''
-
-        destination = "group_vars/all"
-        self.write_yaml(destination, global_section)
 
     def save_group(self, cluster, filename):
         '''Write each cluster file in group_vars/'''
@@ -172,32 +145,29 @@ class AnsibleConfigGen(object):
         destination = "host_vars/{}".format(host['hostname'])
         self.write_yaml(destination, host)
 
-    def save_hosts(self, section=None, content=None, initialize=False):
-        '''Append config options to the 'hosts' file, initializing if asked'''
+    def save_hosts(self, hosts_data):
+        '''Create the 'hosts' file'''
         try:
-            if initialize:
-                open("hosts", 'w').close()
-            elif section is not None and content is not None:
-                with open("hosts", 'a') as hosts_file:
+            with open("hosts", 'w') as hosts_file:
+                for section in sorted(hosts_data.iterkeys(), reverse=True):
                     print("[{}]".format(section), file=hosts_file)
-                    print("{}\n".format(content), file=hosts_file)
+                    print("{}\n".format(hosts_data[section]), file=hosts_file)
         except OSError as e:
-            print("Error writing to {}: {}".format(filename, e))
-            sys.exit(1)
+            print("Error writing to hosts: {}".format(e))
 
 
-def main(args=None):
-    if args is None:
-        args = sys.argv[1:]
-
+def main():
     try:
-        if args is None:
-            args = sys.argv[1:]
+        parser = argparse.ArgumentParser(description='Generate Ansible files' +
+                                                     ' from a YAML template')
+        parser.add_argument('input_file', help='input config file (YAML)')
+        (args) = parser.parse_args(sys.argv[1:])
 
-        AnsibleConfigGen().main(args)
+        generator = AnsibleConfigGen(args.input_file)
+        generator.run()
     except Exception as e:
         print("Exception: {}".format(e))
-    sys.exit(1)
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

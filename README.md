@@ -25,3 +25,4 @@ ansible-galaxy install -r ansible_roles -p ./roles -f
 
 
 ## Run the installer 
+build-ansible-files.py monasca_config.yml

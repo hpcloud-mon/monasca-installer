@@ -1,0 +1,5 @@
+- name: Installs the Monasca Agent
+  hosts: monasca
+  sudo: yes
+  roles:
+    - {role: monasca-agent, tags: [agent]}

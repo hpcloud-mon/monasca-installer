@@ -4,15 +4,28 @@
   serial: 1  # Prevents more than one box from restarting at a time.
   pre_tasks:
     # The percona apt server doesn't recognize cattleprod so I need to change things so ansible_distribution_release is discovered as  wheezy
-    - name: Change the release to wheezy
+    - name: Change the release to wheezy  # This is all that was needed for ansible 1.7
       replace: dest=/etc/os-release regexp='cattleprod' replace='wheezy'
+      tags:
+        - mysql
+        - percona
+    - name: Change the debian version to wheezy  # This is also needed for Ansible 1.8
+      copy: dest=/etc/debian_version content="wheezy wheezy"
       register: dist_release
+      tags:
+        - mysql
+        - percona
     - name: Reload facts
       setup:
       when: dist_release|changed
+      tags:
+        - mysql
+        - percona
   tasks:
     - name: Install postfix, needed by notification engine
       apt: name=postfix state=present
+    - name: Install python setup tools
+      apt: name=python-setuptools state=present
     - name: Install pip from easy_install
       easy_install: name=pip
     - name: Install packages to allow pip to compile extensions as needed
@@ -22,7 +35,7 @@
         - libssl-dev
         - libcrypto++-dev
   roles:
-    - {role: tkuhlman.zookeeper, tags: [zookeeper]}
-    - {role: tkuhlman.kafka, tags: [kafka]}
-    - {role: stympy.influxdb, tags: [influxdb]}
-    - {role: tkuhlman.percona, percona_package: percona-xtradb-cluster-56, tags: [mysql, percona]}
+    - {role: zookeeper, tags: [zookeeper]}
+    - {role: kafka, tags: [kafka]}
+    - {role: influxdb, tags: [influxdb]}
+    - {role: percona, percona_package: percona-xtradb-cluster-56, tags: [mysql, percona]}

@@ -43,3 +43,5 @@ the machines are:
   - monasca1 - 192.168.10.6
   - monasca2 - 192.168.10.7
   - monasca3 - 192.168.10.8
+
+Simple run `vagrant up` to start the vms.

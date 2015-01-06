@@ -35,3 +35,11 @@ python build-ansible-files.py monasca_config.yml
 To set everything up simply run `ansible-playbook -i hosts site.yml`. Of course individual plays, tags and
 limiting can be used to run just portions. In particular limiting to just a single cluster will be common.
 See the name of the plays for a description on what they cover and refer to docs.ansible.com for additional details.
+
+# Vagrant Environment
+A vagrant file is setup that will build up 1 devstack box and 3 boxes for monasca. The installer can then be run against these machines. The ips of
+the machines are:
+  - devstack - 192.168.10.5
+  - monasca1 - 192.168.10.6
+  - monasca2 - 192.168.10.7
+  - monasca3 - 192.168.10.8

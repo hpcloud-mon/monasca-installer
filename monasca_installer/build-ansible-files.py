@@ -53,6 +53,8 @@ class AnsibleConfigGen(object):
         hosts = config.pop('hosts')
         master_config = config.pop('master_config')
         workers_config = config.pop('workers_config')
+        monitored_services = config.pop('monitored_services')
+        agent_config = config.pop('agent_config')
 
         # Initialize the various required host list variables
         for key in ['kafka_hosts', 'zookeeper_hosts']:
@@ -90,6 +92,15 @@ class AnsibleConfigGen(object):
         self.save_group(config, 'monasca')
         self.save_group(master_config, "monasca_master")
         self.save_group(workers_config, "monasca_workers")
+        
+        for service in monitored_services:
+            if service['service'] != 'monasca':
+                # skip the monasca group vars, it already exists
+                if service['service'] == 'multi-service':
+                    agent_config['monasca_agent']['service'] = ""
+                else:
+                    agent_config['monasca_agent']['service'] = service['service']
+                self.save_group(agent_config, service['service'])
 
         # Build the files in host_vars/
         for host in hosts:
@@ -101,6 +112,9 @@ class AnsibleConfigGen(object):
         hosts_data['monasca_workers'] = "\n".join(h['hostname']
                                                   for h in hosts[1:])
         hosts_data['monasca:children'] = "monasca_master\nmonasca_workers"
+        
+        self.add_agent_hosts(monitored_services, hosts_data)
+        
         self.save_hosts(hosts_data)
 
     def write_yaml(self, filename, data):
@@ -144,6 +158,17 @@ class AnsibleConfigGen(object):
 
         destination = "host_vars/{}".format(host['hostname'])
         self.write_yaml(destination, host)
+
+    def add_agent_hosts(self, monitored_services, hosts_data):
+        '''Add hosts by service for agent install'''
+        services = []
+        for service in monitored_services:
+            # skip the hostnames for monasca, since they exist in the hosts already.
+            if service['service'] != 'monasca':
+                hosts_data[service['service']] = "\n".join(h['hostname']
+                                                  for h in service['hosts'])
+            services.append(service['service'])
+        hosts_data['agent:children'] = '\n'.join(services)
 
     def save_hosts(self, hosts_data):
         '''Create the 'hosts' file'''

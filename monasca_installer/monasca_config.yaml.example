@@ -1,13 +1,22 @@
 # Here is the basic structure of this file.
 #
-# global:
-# clusters:
-#   - cluster_name: "unique-cluster-name"
-#     # cluster-wide parameters go here
+#  The entire config file is read.  The sections below are removed from the 
+#  config file data and used to create the group_var files and hosts file.
+#  Then the remaining config data is written to the monasca group_vars file.
+#
 #     master_config:
 #       # configuration options for the master node
+#         written to the monasca_master group vars.
 #     workers_config:
 #       # configuration options for worker nodes
+#         written to the monasca_workers group vars.
+#     monitored_services:
+#       # hosts by services to install the monasca_agent
+#       used to update the hosts file and services for the 
+#       external service group vars files.
+#     agent_config:
+#       # the monasca_agent dictionary that contains service.
+#         template used for the external service group vars file.
 #     hosts:
 #     - hostname: "unique-host-name"
 #       ...parameters for each host...
@@ -45,6 +54,8 @@ keystone_project_admin: monasca-agent
 keystone_project_admin_password: pass1234
 keystone_host: 10.22.156.19
 keystone_url: http://10.22.156.19:35357/v3
+
+#The monasca_agent for monasca
 monasca_agent:
   user: monasca-agent
   password: PLEASE-GENERATE
@@ -111,7 +122,31 @@ workers_config:
     raft_port: '{{influxdb_raft_port}}'
     replication_factor: '{{influxdb_replication_factor}}'
 
+agent_config:
+  monasca_agent:
+  # The service will be populated by monitored_services service.
+  # The monasca_agent dictionary is output in the service group_var file.
+    user: monasca-agent
+    password: PLEASE-GENERATE
+    project: test
+    service: monitoring
+
+monitored_services:
+  # Hosts by service to install the monasca-agent.  One agent is installed per host
+  # The service name is used to configure the agent to emit metrics for that service.
+  # Note: the monasca hosts are ignored here, since they are defined in hosts.
+  - service: monasca
+    hosts:
+      - hostname: mon-ae1test-monasca01.useast.hpcloud.net
+      - hostname: mon-ae1test-monasca02.useast.hpcloud.net
+      - hostname: mon-ae1test-monasca03.useast.hpcloud.net
+  - service: devstack
+    hosts:
+      - hostname: one
+      - hostname: two
+
 hosts:
+# The monasca hosts
   - hostname: mon-ae1test-monasca01.useast.hpcloud.net
     internal_ip: 10.22.156.11
     kafka_id: 0

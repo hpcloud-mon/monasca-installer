@@ -41,7 +41,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     mm.vm.box = "ubuntu/trusty64"
     mm.vm.network :private_network, ip: "192.168.10.6"
     mm.vm.provider "virtualbox" do |vb|
-      vb.memory = 3068
+      vb.memory = 6144 
       vb.cpus = 4
     end
   end
@@ -50,7 +50,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     mm.vm.box = "ubuntu/trusty64"
     mm.vm.network :private_network, ip: "192.168.10.7"
     mm.vm.provider "virtualbox" do |vb|
-      vb.memory = 3068
+      vb.memory = 6144 
       vb.cpus = 4
     end
   end
@@ -59,7 +59,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     mm.vm.box = "ubuntu/trusty64"
     mm.vm.network :private_network, ip: "192.168.10.8"
     mm.vm.provider "virtualbox" do |vb|
-      vb.memory = 3068
+      vb.memory = 6144 
       vb.cpus = 4
     end
   end

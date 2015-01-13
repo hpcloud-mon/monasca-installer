@@ -5,10 +5,6 @@ VAGRANTFILE_API_VERSION = "2" # Vagrantfile API/syntax version. Don't touch unle
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  if Vagrant.has_plugin?("vagrant-cachier")
-    config.cache.scope = :box
-  end
-
   # Handle local proxy settings
   if Vagrant.has_plugin?("vagrant-proxyconf")
     if ENV["http_proxy"]
@@ -41,7 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     mm.vm.box = "ubuntu/trusty64"
     mm.vm.network :private_network, ip: "192.168.10.6"
     mm.vm.provider "virtualbox" do |vb|
-      vb.memory = 3068
+      vb.memory = 6144 
       vb.cpus = 4
     end
   end
@@ -50,7 +46,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     mm.vm.box = "ubuntu/trusty64"
     mm.vm.network :private_network, ip: "192.168.10.7"
     mm.vm.provider "virtualbox" do |vb|
-      vb.memory = 3068
+      vb.memory = 6144 
       vb.cpus = 4
     end
   end
@@ -59,7 +55,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     mm.vm.box = "ubuntu/trusty64"
     mm.vm.network :private_network, ip: "192.168.10.8"
     mm.vm.provider "virtualbox" do |vb|
-      vb.memory = 3068
+      vb.memory = 6144 
       vb.cpus = 4
     end
   end

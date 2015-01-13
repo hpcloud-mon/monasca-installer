@@ -15,8 +15,8 @@ git clone https://github.com/hpcloud-mon/monasca-installer
 #### Linux (Ubuntu)
 ```
 sudo pip install ansible  (using ansible version >= 1.8)
-cd monasca_installer
-ansible-galaxy install -r requirements.yml -p ./roles -f
+cd monasca_installer/monasca_installer
+ansible-galaxy install -r ../requirements.yml -p ./roles -f
 ```
 
 # Using the installer
@@ -45,3 +45,6 @@ the machines are:
   - monasca3 - 192.168.10.8
 
 Simple run `vagrant up` to start the vms.
+
+Use the vagrant_config.yml, and run the playbook
+python build-ansible-files.py vagrant_config.yml

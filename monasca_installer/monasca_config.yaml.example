@@ -101,15 +101,15 @@ master_config:
     monapi: '{{api_mysql_password}}'
     thresh: '{{thresh_mysql_password}}'
 
-    # Other settings
-    influxdb:
-      version: '{{influxdb_version}}'
-      raft_port: '{{influxdb_raft_port}}'
-      seed_servers: []
-      replication_factor: '{{influxdb_replication_factor}}'
-    influxdb_retention_policy: "365d"
-    influxdb_shard_duration: "7d"
-    percona_master_node: true
+  # Other settings
+  influxdb:
+    version: '{{influxdb_version}}'
+    raft_port: '{{influxdb_raft_port}}'
+    seed_servers: []
+    replication_factor: '{{influxdb_replication_factor}}'
+  influxdb_retention_policy: "365d"
+  influxdb_shard_duration: "7d"
+  percona_master_node: true
 
 workers_config:
   # Enable/disable services

@@ -134,7 +134,6 @@ class AnsibleConfigGen(object):
 
         try:
             with open(filename, 'w') as output_file:
-                #yaml.safe_dump(data, output_file)
                 yaml.safe_dump(data, output_file, explicit_start=True)
             return True
         except OSError as e:

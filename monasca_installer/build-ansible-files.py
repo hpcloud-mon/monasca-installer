@@ -18,6 +18,8 @@
 from __future__ import print_function
 
 import argparse
+import glob
+import numbers
 import os
 import random
 import string
@@ -49,6 +51,9 @@ class AnsibleConfigGen(object):
             print("Unable to open file {}, {}".format(self.config_file, e))
             return
 
+        self.clean_dir('group_vars/')
+        self.clean_dir('host_vars/')
+        
         # Extract sections out of the config, to be written to other files
         hosts = config.pop('hosts')
         master_config = config.pop('master_config')
@@ -129,7 +134,7 @@ class AnsibleConfigGen(object):
 
         try:
             with open(filename, 'w') as output_file:
-                yaml.safe_dump(data, output_file)
+                yaml.safe_dump(data, output_file, explicit_start=True)
             return True
         except OSError as e:
             print("Error writing to {}: {}".format(filename, e))
@@ -152,6 +157,12 @@ class AnsibleConfigGen(object):
         destination = "group_vars/{}".format(filename)
 
         self.write_yaml(destination, cluster)
+        
+    def clean_dir(self, dirname):
+        if os.path.exists(dirname):
+            files = glob.glob(dirname + '*')
+            for f in files:
+                os.remove(f)
 
     def save_hostvar(self, host):
         '''Write each host file in host_vars/'''

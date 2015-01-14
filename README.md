@@ -15,8 +15,8 @@ git clone https://github.com/hpcloud-mon/monasca-installer
 #### Linux (Ubuntu)
 ```
 sudo pip install ansible  (using ansible version >= 1.8)
-cd monasca_installer
-ansible-galaxy install -r requirements.yml -p ./roles -f
+cd monasca_installer/monasca_installer
+ansible-galaxy install -r ../requirements.yml -p ./roles -f
 ```
 
 # Using the installer
@@ -32,9 +32,10 @@ python build-ansible-files.py monasca_config.yml
 ```
 
 ## Run the ansible site playbook
-To set everything up simply run `ansible-playbook -i hosts site.yml`. Of course individual plays, tags and
-limiting can be used to run just portions. In particular limiting to just a single cluster will be common.
-See the name of the plays for a description on what they cover and refer to docs.ansible.com for additional details.
+```
+ansible-playbook -K -i ./hosts site.yml
+```
+Note: sudo password for user vagrant is 'vagrant'
 
 # Vagrant Environment
 A vagrant file is setup that will build up 1 devstack box and 3 boxes for monasca. The installer can then be run against these machines. The ips of
@@ -44,4 +45,7 @@ the machines are:
   - monasca2 - 192.168.10.7
   - monasca3 - 192.168.10.8
 
-Simple run `vagrant up` to start the vms.
+Simply run `vagrant up` to start the vms.
+
+Use the vagrant_config.yml, and run the playbook
+python build-ansible-files.py vagrant_config.yml

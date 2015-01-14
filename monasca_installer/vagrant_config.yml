@@ -36,40 +36,40 @@ panel_dest_path: /usr/share/openstack-dashboard/monitoring
 # influxdb_ssl_certificate, influxdb_ssl_certificate_src
 
 # Load balanced vips
-influxdb_url: https://mon-ae1test-monasca01.useast.hpcloud.net:8086
-monasca_api_url: https://mon-ae1test-monasca02.useast.hpcloud.net:8080/v2.0
-mysql_host: mon-ae1test-monasca02.useast.hpcloud.net
+influxdb_url: https://192.168.10.6:8086
+monasca_api_url: https://192.168.10.6:8080/v2.0
+mysql_host: 192.168.10.6
 
 # API settings
-api_region: useast
+api_region: vagrant-useast
 api_influxdb_user: mon_api
-api_influxdb_password: PLEASE-GENERATE
+api_influxdb_password: password
 api_mysql_user: monapi
-api_mysql_password: PLEASE-GENERATE
+api_mysql_password: password
 
 keystone_admin: admin
-keystone_admin_password: pass1234
-keystone_admin_token: ADMINTOKEN
+keystone_admin_password: password
+keystone_admin_token: ADMIN
 keystone_project_admin: monasca-agent
-keystone_project_admin_password: pass1234
-keystone_host: 10.22.156.19
-keystone_url: http://10.22.156.19:35357/v3
+keystone_project_admin_password: password
+keystone_host: 192.168.10.5
+keystone_url: http://192.168.10.5:35357/v3
 
 #The monasca_agent for monasca
 monasca_agent:
   user: monasca-agent
-  password: PLEASE-GENERATE
+  password: password
   project: test
   service: monitoring
 
-mysql_root_password: PLEASE-GENERATE
+mysql_root_password: password
 notification_mysql_user: notification
-notification_mysql_password: PLEASE-GENERATE
+notification_mysql_password: password
 persister_influxdb_user: mon_persister
-persister_influxdb_password: PLEASE-GENERATE
+persister_influxdb_password: password
 smtp_host: localhost
 thresh_mysql_user: thresh
-thresh_mysql_password: PLEASE-GENERATE
+thresh_mysql_password: password
 wsrep_cluster_name: monasca
 
 influxdb_replication_factor: 3
@@ -127,7 +127,7 @@ agent_config:
   # The service will be populated by monitored_services service.
   # The monasca_agent dictionary is output in the service group_var file.
     user: monasca-agent
-    password: PLEASE-GENERATE
+    password: password
     project: test
     service: monitoring
 
@@ -139,27 +139,22 @@ monitored_services:
   # Note: the monasca hosts are ignored here, since they are defined in hosts.
   - service: monasca
     hosts:
-      - hostname: mon-ae1test-monasca01.useast.hpcloud.net
-      - hostname: mon-ae1test-monasca02.useast.hpcloud.net
-      - hostname: mon-ae1test-monasca03.useast.hpcloud.net
+      - hostname: 192.168.10.6
+      - hostname: 192.168.10.7
+      - hostname: 192.168.10.8
   - service: devstack
     hosts:
-      - hostname: one
-  - service: multi-service
-    # multi-service hosts are hosts that have more than one monitored service installed
-    hosts:
-      - hostname: three
-      - hostname: four
+      - hostname: 192.168.10.5
 
 hosts:
 # The monasca hosts
-  - hostname: mon-ae1test-monasca01.useast.hpcloud.net
-    internal_ip: 10.22.156.11
+  - hostname: 192.168.10.6
+    internal_ip: 192.168.10.6
     kafka_id: 0
-  - hostname: mon-ae1test-monasca02.useast.hpcloud.net
-    internal_ip: 10.22.156.12
+  - hostname: 192.168.10.7
+    internal_ip: 192.168.10.7
     kafka_id: 1
-  - hostname: mon-ae1test-monasca03.useast.hpcloud.net
-    internal_ip: 10.22.156.13
+  - hostname: 192.168.10.8
+    internal_ip: 192.168.10.8
     kafka_id: 2
 

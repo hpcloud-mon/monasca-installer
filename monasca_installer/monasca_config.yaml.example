@@ -37,7 +37,7 @@ panel_dest_path: /usr/share/openstack-dashboard/monitoring
 
 # Load balanced vips
 influxdb_url: https://mon-ae1test-monasca01.useast.hpcloud.net:8086
-monasca_api_url: https://mon-ae1test-monasca02.useast.hpcloud.net:8080/v2.0
+monasca_api_url: https://{{monasca_api_host}}:8080/v2.0
 mysql_host: mon-ae1test-monasca02.useast.hpcloud.net
 
 # API settings
@@ -47,19 +47,27 @@ api_influxdb_password: PLEASE-GENERATE
 api_mysql_user: monapi
 api_mysql_password: PLEASE-GENERATE
 
-keystone_admin: admin
-keystone_admin_password: pass1234
-keystone_admin_token: ADMINTOKEN
-keystone_project_admin: monasca-agent
-keystone_project_admin_password: pass1234
-keystone_host: 10.22.156.19
-keystone_url: http://10.22.156.19:35357/v3
+all_config:
+  monasca_api_host: mon-ae1test-monasca01.useast.hpcloud.net
+  keystone_admin: admin
+  keystone_admin_password: password
+  keystone_admin_token: ADMIN
+  keystone_endpoint: {host: '{{ monasca_api_host }}', name: monasca}
+  # keystone_host is the host that has keystone installed
+  keystone_host: 192.168.10.5
+  keystone_project: test
+  keystone_project_admin: monasca-agent
+  keystone_project_admin_password: password
+  keystone_url: http://192.168.10.5:35357/v3
+  keystone_users:
+    mini-mon: {password: password, role: monasca-user, tenant: "{{keystone_project}}"}
+    monasca-agent: {password: password, role: monasca-agent, tenant: "{{keystone_project}}"}
 
 #The monasca_agent for monasca
 monasca_agent:
   user: monasca-agent
-  password: PLEASE-GENERATE
-  project: test
+  password: "{{keystone_users.monasca-agent.password}}"
+  project: "{{keystone_users.monasca-agent.tenant}}"
   service: monitoring
 
 mysql_root_password: PLEASE-GENERATE

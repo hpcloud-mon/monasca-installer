@@ -37,7 +37,7 @@ panel_dest_path: /usr/share/openstack-dashboard/monitoring
 
 # Load balanced vips
 influxdb_url: https://192.168.10.6:8086
-monasca_api_url: https://192.168.10.6:8080/v2.0
+monasca_api_url: https://{{monasca_api_host}}:8080/v2.0
 mysql_host: 192.168.10.6
 
 # API settings
@@ -47,19 +47,26 @@ api_influxdb_password: password
 api_mysql_user: monapi
 api_mysql_password: password
 
-keystone_admin: admin
-keystone_admin_password: password
-keystone_admin_token: ADMIN
-keystone_project_admin: monasca-agent
-keystone_project_admin_password: password
-keystone_host: 192.168.10.5
-keystone_url: http://192.168.10.5:35357/v3
+all_config:
+  monasca_api_host: 192.168.10.6
+  keystone_admin: admin
+  keystone_admin_password: password
+  keystone_admin_token: ADMIN
+  keystone_endpoint: {host: '{{ monasca_api_host }}', name: monasca}
+  keystone_host: 192.168.10.5
+  keystone_project: test
+  keystone_project_admin: monasca-agent
+  keystone_project_admin_password: password
+  keystone_url: http://192.168.10.5:35357/v3
+  keystone_users:
+    mini-mon: {password: password, role: monasca-user, tenant: "{{keystone_project}}"}
+    monasca-agent: {password: password, role: monasca-agent, tenant: "{{keystone_project}}"}
 
 #The monasca_agent for monasca
 monasca_agent:
   user: monasca-agent
-  password: password
-  project: test
+  password: "{{keystone_users.monasca-agent.password}}"
+  project: "{{keystone_users.monasca-agent.tenant}}"
   service: monitoring
 
 mysql_root_password: password
@@ -127,8 +134,8 @@ agent_config:
   # The service will be populated by monitored_services service.
   # The monasca_agent dictionary is output in the service group_var file.
     user: monasca-agent
-    password: password
-    project: test
+    password: "{{keystone_users.monasca-agent.password}}"
+    project: "{{keystone_users.monasca-agent.tenant}}"
     service: monitoring
 
 monitored_services:

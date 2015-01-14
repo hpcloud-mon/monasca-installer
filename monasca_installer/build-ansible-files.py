@@ -60,6 +60,7 @@ class AnsibleConfigGen(object):
         workers_config = config.pop('workers_config')
         monitored_services = config.pop('monitored_services')
         agent_config = config.pop('agent_config')
+        all_config = config.pop('all_config')
 
         # Initialize the various required host list variables
         for key in ['kafka_hosts', 'zookeeper_hosts']:
@@ -97,6 +98,7 @@ class AnsibleConfigGen(object):
         self.save_group(config, 'monasca')
         self.save_group(master_config, "monasca_master")
         self.save_group(workers_config, "monasca_workers")
+        self.save_group(all_config, 'all')
         
         for service in monitored_services:
             if service['service'] != 'monasca':
@@ -117,6 +119,8 @@ class AnsibleConfigGen(object):
         hosts_data['monasca_workers'] = "\n".join(h['hostname']
                                                   for h in hosts[1:])
         hosts_data['monasca:children'] = "monasca_master\nmonasca_workers"
+        
+        hosts_data['keystone_host'] = all_config['keystone_host']
         
         self.add_agent_hosts(monitored_services, hosts_data)
         

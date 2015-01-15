@@ -60,5 +60,6 @@ target/
 monasca_installer/ansible.cfg
 monasca_installer/group_vars/
 monasca_installer/host_vars/
+monasca_installer/roles/
 monasca_installer/hosts
 monasca_installer/monasca_config.yml

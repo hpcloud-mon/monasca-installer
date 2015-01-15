@@ -49,6 +49,7 @@ api_mysql_password: password
 
 all_config:
   monasca_api_host: 192.168.10.6
+  monasca_api_url: https://{{monasca_api_host}}:8080/v2.0
   keystone_admin: admin
   keystone_admin_password: password
   keystone_admin_token: ADMIN
@@ -59,14 +60,14 @@ all_config:
   keystone_project_admin_password: password
   keystone_url: http://192.168.10.5:35357/v3
   keystone_users:
-    mini-mon: {password: password, role: monasca-user, tenant: "{{keystone_project}}"}
-    monasca-agent: {password: password, role: monasca-agent, tenant: "{{keystone_project}}"}
+    mini-mon: {password: password, role: monasca-user, project: "{{keystone_project}}"}
+    monasca-agent: {password: password, role: monasca-agent, project: "{{keystone_project}}"}
 
 #The monasca_agent for monasca
 monasca_agent:
   user: monasca-agent
   password: "{{keystone_users.monasca-agent.password}}"
-  project: "{{keystone_users.monasca-agent.tenant}}"
+  project: "{{keystone_users.monasca-agent.project}}"
   service: monitoring
 
 mysql_root_password: password
@@ -135,7 +136,7 @@ agent_config:
   # The monasca_agent dictionary is output in the service group_var file.
     user: monasca-agent
     password: "{{keystone_users.monasca-agent.password}}"
-    project: "{{keystone_users.monasca-agent.tenant}}"
+    project: "{{keystone_users.monasca-agent.project}}"
     service: monitoring
 
 monitored_services:

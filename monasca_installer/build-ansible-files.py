@@ -81,7 +81,8 @@ class AnsibleConfigGen(object):
 
             config['zookeeper_servers'][host['internal_ip']] = host['kafka_id']
             config['wsrep_cluster_hosts'].append(host['internal_ip'])
-            workers_config['influxdb']['seed_servers'].append(host['internal_ip'])
+            workers_config['influxdb']['seed_servers'].append("{}:{}".format(host['internal_ip'],
+                                                                             config['influxdb_raft_port']))
 
         # Remove leading commas in the text string lists
         for key in ['kafka_hosts', 'zookeeper_hosts']:

@@ -1,3 +1,9 @@
+- name: Install monasca keystone roles and endpoint on a keystone host
+  hosts: keystone_host
+  sudo: yes
+  roles:
+    - {role: monasca-keystone, keystone_url: "http://{{keystone_host}}:35357/v2.0", tags: [keystone]}  # uses keystone v2 still
+
 - name: Installs the Monasca DBs, kafka and other core dependencies
   hosts: monasca
   sudo: yes

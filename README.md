@@ -33,9 +33,8 @@ python build-ansible-files.py monasca_config.yml
 
 ## Run the ansible site playbook
 ```
-ansible-playbook -K -i ./hosts site.yml
+ansible-playbook -i ./hosts site.yml
 ```
-Note: sudo password for user vagrant is 'vagrant'
 
 # Vagrant Environment
 A vagrant file is setup that will build up 1 devstack box and 3 boxes for monasca. The installer can then be run against these machines. The ips of

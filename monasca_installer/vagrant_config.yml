@@ -83,6 +83,7 @@ wsrep_cluster_name: monasca
 influxdb_replication_factor: 3
 influxdb_version: 0.8.1
 influxdb_raft_port: 9090
+influxdb_hostname: "{{ inventory_hostname }}"
 
 # The ports are not written to a config file directly, but used by the generator
 zookeeper_client_port: 2181

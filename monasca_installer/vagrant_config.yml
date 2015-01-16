@@ -79,6 +79,8 @@ smtp_host: localhost
 thresh_mysql_user: thresh
 thresh_mysql_password: password
 wsrep_cluster_name: monasca
+wsrep_node_name: '{{inventory_hostname}}'
+wsrep_sst_receive_address: '{{inventory_hostname}}'
 
 influxdb_replication_factor: 3
 influxdb_version: 0.8.1

@@ -36,7 +36,7 @@ panel_dest_path: /usr/share/openstack-dashboard/monitoring
 # influxdb_ssl_certificate, influxdb_ssl_certificate_src
 
 # Load balanced vips
-influxdb_url: https://192.168.10.6:8086
+influxdb_url: http://192.168.10.6:8086
 mysql_host: 192.168.10.6
 
 # API settings

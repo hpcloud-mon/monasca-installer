@@ -120,11 +120,9 @@ class AnsibleConfigGen(object):
         hosts_data['monasca_workers'] = "\n".join(h['hostname']
                                                   for h in hosts[1:])
         hosts_data['monasca:children'] = "monasca_master\nmonasca_workers"
-        
         hosts_data['keystone_host'] = all_config['keystone_host']
-        
+        hosts_data['mysql_host'] = config['mysql_host']
         self.add_agent_hosts(monitored_services, hosts_data)
-        
         self.save_hosts(hosts_data)
 
     def write_yaml(self, filename, data):

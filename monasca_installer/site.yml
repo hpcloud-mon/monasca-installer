@@ -11,6 +11,7 @@
       apt: update_cache=yes
 
 - include: monasca_deps.yml
+- include: mysql_schema.yml
 - include: schema.yml
 - include: monasca.yml
 - include: agent.yml

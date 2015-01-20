@@ -1,5 +1,5 @@
-- name: Configures the Monasca schema
+- name: Configures the Influxdb schema and users, and Kafka topics
   hosts: monasca_master
   sudo: yes
   roles:
-    - {role: monasca-schema, tags: [schema]}
+    - {role: monasca-schema, influxdb_schema_enabled: true, kafka_topics_enabled: true, mysql_schema_enabled: false, tags: [schema]}

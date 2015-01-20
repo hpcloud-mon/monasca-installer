@@ -46,7 +46,26 @@ api_influxdb_password: PLEASE-GENERATE
 api_mysql_user: monapi
 api_mysql_password: PLEASE-GENERATE
 
+# When mysql on external host from monasca, set this to false
+mysql_install_on_monasca: true
+
 all_config:
+  # The variables in 'all' can be used by any host (monasca or external)
+  
+  # Note: The mysql schema path default is: monasca_schema_file: /var/lib/mysql/mon.sql
+  mysql_admin: root
+  mysql_admin_password: password
+  api_mysql_user: monapi
+  api_mysql_password: password
+  thresh_mysql_user: thresh
+  thresh_mysql_password: password
+  notification_mysql_user: notification
+  notification_mysql_password: password
+  mysql_users:
+    notification: '{{notification_mysql_password}}'
+    monapi: '{{api_mysql_password}}'
+    thresh: '{{thresh_mysql_password}}'
+
   monasca_api_host: mon-ae1test-monasca01.useast.hpcloud.net
   # Load balanced vip for monasca_api url
   monasca_api_url: https://{{monasca_api_host}}:8080/v2.0
@@ -109,10 +128,6 @@ master_config:
     transformed-events: { replicas: 3, partitions: 12 }
     alarm-state-transitions: { replicas: 3, partitions: 12 }
     alarm-notifications: { replicas: 3, partitions: 12 }
-  mysql_users:
-    notification: '{{notification_mysql_password}}'
-    monapi: '{{api_mysql_password}}'
-    thresh: '{{thresh_mysql_password}}'
 
   # Other settings
   influxdb:

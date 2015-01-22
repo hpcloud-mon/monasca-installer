@@ -41,12 +41,6 @@ extras
 
 ## Optional ansible alarm configuration
 
-One time setup:
-```
-cd monasca_installer
-git subtree add --prefix monasca_installer/library/monasca https://github.com/hpcloud-mon/ansible-module-monasca.git master --squash
-```
-
 Modify alarms.yml monasca_notification_method.address:
 monasca_notification_method:
         name: "Email Root"

@@ -25,4 +25,4 @@
     - {role: zookeeper, tags: [zookeeper]}
     - {role: kafka, tags: [kafka]}
     - {role: influxdb, tags: [influxdb]}
-    - {role: percona, when: mysql_install_on_monasca, percona_package: percona-xtradb-cluster-56, tags: [mysql, percona]}
+    - {role: percona, when: mysql_install_on_monasca, tags: [mysql, percona]}

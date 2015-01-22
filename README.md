@@ -36,6 +36,28 @@ python build-ansible-files.py monasca_config.yml
 ansible-playbook -i ./hosts site.yml
 ```
 
+extras
+======
+
+## Optional ansible alarm configuration
+
+One time setup:
+```
+cd monasca_installer
+git subtree add --prefix monasca_installer/library/monasca https://github.com/hpcloud-mon/ansible-module-monasca.git master --squash
+```
+
+Modify alarms.yml monasca_notification_method.address:
+monasca_notification_method:
+        name: "Email Root"
+        type: 'EMAIL'
+        address: 'root@localhost'
+
+Run alarms.yml playbook:
+```
+ansible-playbook -i ./hosts alarms.yml
+```
+
 # Vagrant Environment
 A vagrant file is setup that will build up 1 devstack box and 3 boxes for monasca. The installer can then be run against these machines. The ips of
 the machines are:
@@ -43,6 +65,8 @@ the machines are:
   - monasca1 - 192.168.10.6
   - monasca2 - 192.168.10.7
   - monasca3 - 192.168.10.8
+
+The vagrant install of 1 devstack and 3 monasca servers takes about 24G memory.  To install with 1 devstack and 1 monasca server takes 16G memory.
 
 Simply run `vagrant up` to start the vms.
 

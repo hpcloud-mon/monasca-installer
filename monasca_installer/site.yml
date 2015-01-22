@@ -15,5 +15,4 @@
 - include: schema.yml
 - include: monasca.yml
 - include: agent.yml
-#- include: alarms.yml
 - include: agent_status.yml

@@ -1,25 +1,36 @@
-# Here is the basic structure of this file.
+#  Use this file as a template when creating a new config file.
+#  Many of the defaults can be left as is (although password changes
+#  are most likely desired).  
+#  The values that must be configured are:
+#      influxdb_url
+#      mysql_host
+#      keystone_host
+#      monasca_api_host
+#      monitored_services
+#      hosts
+#             
+#  Here is the basic structure of this file.
 #
 #  The entire config file is read.  The sections below are removed from the 
-#  config file data and used to create the group_var files and hosts file.
+#  config file data and used to create the ansbile group_vars, host_vars, and hosts files.
 #  Then the remaining config data is written to the monasca group_vars file.
 #
+#     all_config:
+#       # group_vars variables for all hosts. 
 #     master_config:
-#       # configuration options for the master node
-#         written to the monasca_master group vars.
+#       # group_vars variables for monasca_master.
 #     workers_config:
-#       # configuration options for worker nodes
-#         written to the monasca_workers group vars.
+#       # group_vars variables for monasca_workers.
 #     monitored_services:
-#       # hosts by services to install the monasca_agent
+#       # hosts by services to install the monasca_agent.
 #       used to update the hosts file and services for the 
-#       external service group vars files.
+#       external service (i.e. glance, neutron) group vars.
 #     agent_config:
 #       # the monasca_agent dictionary that contains service.
 #         template used for the external service group vars file.
 #     hosts:
-#     - hostname: "unique-host-name"
-#       ...parameters for each host...
+#       # list of hosts within the monasca cluster.
+#       monasca server hostname, ip, and sequential kafka id.
 #
 # Random passwords can be generated on request throughout the configuration.
 # To insert a random password at any point, use this string:  PLEASE-GENERATE
@@ -43,8 +54,6 @@ mysql_host: mon-ae1test-monasca02.useast.hpcloud.net
 api_region: useast
 api_influxdb_user: mon_api
 api_influxdb_password: PLEASE-GENERATE
-api_mysql_user: monapi
-api_mysql_password: PLEASE-GENERATE
 
 # When mysql on external host from monasca, set this to false
 mysql_install_on_monasca: true
@@ -53,6 +62,7 @@ all_config:
   # The variables in 'all' can be used by any host (monasca or external)
   
   # Note: The mysql schema path default is: monasca_schema_file: /var/lib/mysql/mon.sql
+  mysql_root_password: PLEASE-GENERATE
   mysql_admin: root
   mysql_admin_password: password
   api_mysql_user: monapi
@@ -78,7 +88,7 @@ all_config:
   keystone_project: test
   keystone_project_admin: monasca-agent
   keystone_project_admin_password: password
-  keystone_url: http://192.168.10.5:35357/v3
+  keystone_url: http://{{keystone_host}}:35357/v3
   keystone_users:
     mini-mon: {password: password, role: monasca-user, project: "{{keystone_project}}"}
     monasca-agent: {password: password, role: monasca-agent, project: "{{keystone_project}}"}
@@ -90,14 +100,9 @@ monasca_agent:
   project: "{{keystone_users.monasca-agent.tenant}}"
   service: monitoring
 
-mysql_root_password: PLEASE-GENERATE
-notification_mysql_user: notification
-notification_mysql_password: PLEASE-GENERATE
 persister_influxdb_user: mon_persister
 persister_influxdb_password: PLEASE-GENERATE
 smtp_host: localhost
-thresh_mysql_user: thresh
-thresh_mysql_password: PLEASE-GENERATE
 wsrep_cluster_name: monasca
 
 influxdb_replication_factor: 3

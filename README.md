@@ -1,7 +1,7 @@
 monasca-installer
 =================
 
-Installs monasca using ansible.
+Installs monasca using ansible.  Uses a simple config template to generate ansible inventory.
 
 # Installation
 

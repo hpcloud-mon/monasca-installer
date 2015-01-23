@@ -37,7 +37,7 @@
 
 # Paths used by the installed version of Horizon
 dashboard_path: /usr/share/openstack-dashboard/openstack_dashboard/
-grafana_repo_dir: /opt/grafana/
+grafana_base_dir: /opt
 grafana_dest: /usr/share/openstack-dashboard/static/grafana
 panel_dest_path: /usr/share/openstack-dashboard/monitoring
 
@@ -80,7 +80,7 @@ all_config:
   # Load balanced vip for monasca_api url
   monasca_api_url: https://{{monasca_api_host}}:8080/v2.0
   
-  # if using hlinux use 
+  # if using hlinux use:
   # percona_package: percona-xtradb-cluster-server-5.5
   # setup_percona_repo: false  
   percona_package: percona-xtradb-cluster-56
@@ -97,6 +97,33 @@ all_config:
   keystone_users:
     mini-mon: {password: password, role: monasca-user, project: "{{keystone_project}}"}
     monasca-agent: {password: password, role: monasca-agent, project: "{{keystone_project}}"}
+
+monitored_services:
+  # Hosts by service to install the monasca-agent.  One agent is installed per host.
+  # The service name is used to configure the agent to emit metrics for that service.
+  # A host having more than one service can only be listed under 'multi-service'.
+  # hostname can be the pingable domain name or ip address.
+  # Note: the monasca hosts are ignored here, since they are defined in hosts.
+  - service: monasca
+    hosts:
+      - hostname: 192.168.10.6
+      - hostname: 192.168.10.7
+      - hostname: 192.168.10.8
+  - service: devstack
+    hosts:
+      - hostname: 192.168.10.5
+
+hosts:
+# The monasca hosts
+  - hostname: 192.168.10.6
+    internal_ip: 192.168.10.6
+    kafka_id: 0
+  - hostname: 192.168.10.7
+    internal_ip: 192.168.10.7
+    kafka_id: 1
+  - hostname: 192.168.10.8
+    internal_ip: 192.168.10.8
+    kafka_id: 2
 
 #The monasca_agent for monasca
 monasca_agent:
@@ -170,31 +197,3 @@ agent_config:
     password: "{{keystone_users.monasca-agent.password}}"
     project: "{{keystone_users.monasca-agent.project}}"
     service: monitoring
-
-monitored_services:
-  # Hosts by service to install the monasca-agent.  One agent is installed per host.
-  # The service name is used to configure the agent to emit metrics for that service.
-  # A host having more than one service can only be listed under 'multi-service'.
-  # hostname can be the pingable domain name or ip address.
-  # Note: the monasca hosts are ignored here, since they are defined in hosts.
-  - service: monasca
-    hosts:
-      - hostname: 192.168.10.6
-      - hostname: 192.168.10.7
-      - hostname: 192.168.10.8
-  - service: devstack
-    hosts:
-      - hostname: 192.168.10.5
-
-hosts:
-# The monasca hosts
-  - hostname: 192.168.10.6
-    internal_ip: 192.168.10.6
-    kafka_id: 0
-  - hostname: 192.168.10.7
-    internal_ip: 192.168.10.7
-    kafka_id: 1
-  - hostname: 192.168.10.8
-    internal_ip: 192.168.10.8
-    kafka_id: 2
-

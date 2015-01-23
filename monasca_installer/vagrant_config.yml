@@ -93,10 +93,11 @@ all_config:
   keystone_project: test
   keystone_project_admin: monasca-agent
   keystone_project_admin_password: password
+  keystone_monasca_agent_password: password
   keystone_url: http://{{keystone_host}}:35357/v3
   keystone_users:
-    mini-mon: {password: password, role: monasca-user, project: "{{keystone_project}}"}
-    monasca-agent: {password: password, role: monasca-agent, project: "{{keystone_project}}"}
+    mini-mon: {password: "{{keystone_project_admin_password}}", role: monasca-user, project: "{{keystone_project}}"}
+    monasca-agent: {password: "{{keystone_monasca_agent_password}}", role: monasca-agent, project: "{{keystone_project}}"}
 
 monitored_services:
   # Hosts by service to install the monasca-agent.  One agent is installed per host.
@@ -128,8 +129,8 @@ hosts:
 #The monasca_agent for monasca
 monasca_agent:
   user: monasca-agent
-  password: "{{keystone_users.monasca-agent.password}}"
-  project: "{{keystone_users.monasca-agent.project}}"
+  password: "{{keystone_monasca_agent_password}}"
+  project: "{{keystone_project}}"
   service: monitoring
 
 persister_influxdb_user: mon_persister
@@ -194,6 +195,6 @@ agent_config:
   # The service will be populated by monitored_services service.
   # The monasca_agent dictionary is output in the service group_var file.
     user: monasca-agent
-    password: "{{keystone_users.monasca-agent.password}}"
-    project: "{{keystone_users.monasca-agent.project}}"
+    password: "{{keystone_monasca_agent_password}}"
+    project: "{{keystone_project}}"
     service: monitoring

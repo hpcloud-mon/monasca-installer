@@ -41,14 +41,29 @@ grafana_base_dir: /opt
 grafana_dest: /usr/share/openstack-dashboard/static/grafana
 panel_dest_path: /usr/share/openstack-dashboard/monitoring
 
-# SSL stuff, if enabled, goes here. Required parameters for SSL are...
-# cacert_src, cacert_name
-# mysql_ssl_ca, mysql_ssl_cert, mysql_ssl_cert_src, mysql_ssl_key, mysql_ssl_key_src, mysql_ssl
-# influxdb_ssl_certificate, influxdb_ssl_certificate_src
+# The following 14 SSL-related parameters are optional.
+# If these options are ommitted, Monasca will be installed without SSL enabled.
+#cacert_src: CA/cacert.pem
+#cacert_name: monasca_ca.crt
 
-# Load balanced vips
-influxdb_url: https://mon-ae1test-monasca01.useast.hpcloud.net:8086
-mysql_host: mon-ae1test-monasca02.useast.hpcloud.net
+#monasca_api_keystore: /etc/monasca/api_keystore.jks
+#monasca_api_keystore_src: CA/{{ansible_hostname}}.jks
+#monasca_api_keystore_password: password
+
+#mysql_ssl_ca: /usr/local/share/ca-certificates/{{cacert_name}}
+#mysql_ssl_ca_src: "{{cacert_src}}"
+#mysql_ssl_cert: /etc/mysql/{{ansible_hostname}}.pem
+#mysql_ssl_cert_src: CA/{{ansible_hostname}}.pem
+#mysql_ssl_key: /etc/mysql/{{ansible_hostname}}_private.pem
+#mysql_ssl_key_src: CA/{{ansible_hostname}}_private.pem
+#mysql_ssl: "{'ca': '/usr/local/share/ca-certificates/{{cacert_name}}' }"
+
+#influxdb_ssl_certificate: /opt/influxdb/shared/{{ansible_hostname}}.pem
+#influxdb_ssl_certificate_src: CA/{{ansible_hostname}}_combined.pem
+
+# Load balanced VIPs (use 'https' in influxdb_url if SSL is enabled)
+influxdb_url: http://mon-ae1test-monasca07.useast.hpcloud.net:8086
+mysql_host: mon-ae1test-monasca07.useast.hpcloud.net
 
 # API settings
 api_region: useast
@@ -77,7 +92,7 @@ all_config:
     thresh: '{{thresh_mysql_password}}'
 
   monasca_api_host: mon-ae1test-monasca01.useast.hpcloud.net
-  # Load balanced vip for monasca_api url
+  # Load balanced VIP for monasca_api URL (use 'https' if SSL is enabled)
   monasca_api_url: http://{{monasca_api_host}}:8080/v2.0
 
   # if using hlinux use:

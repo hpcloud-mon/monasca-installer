@@ -1,5 +1,5 @@
-- name: Install monasca keystone roles and endpoint on a keystone host
-  hosts: keystone_host
+- name: Install monasca keystone roles and endpoint into keystone
+  hosts: monasca_master
   sudo: yes
   roles:
     - {role: monasca-keystone, tags: [keystone]}

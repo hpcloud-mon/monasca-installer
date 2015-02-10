@@ -1,12 +1,6 @@
 - hosts: monasca
   sudo: yes
   tasks:
-    - name: Make sure apt https is available
-      apt: name=apt-transport-https state=present
-    - name: Add in monasca apt key
-      apt_key: url={{ monasca_apt_key }} state=present
-    - name: Add in monasca apt repo
-      apt_repository: repo="{{ monasca_apt_repo }}" state=present
     - name: apt-get update
       apt: update_cache=yes
 

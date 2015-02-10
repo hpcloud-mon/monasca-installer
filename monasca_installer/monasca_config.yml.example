@@ -168,9 +168,6 @@ influxdb_hostname: "{{ inventory_hostname }}"
 zookeeper_client_port: 2181
 kafka_client_port: 9092
 
-monasca_apt_key: https://region-a.geo-1.objects.hpcloudsvc.com/v1/46995959297574/mini-mon/public_repo/mon.gpg
-monasca_apt_repo: deb https://region-a.geo-1.objects.hpcloudsvc.com/v1/46995959297574/mini-mon/public_repo precise release
-
 master_config:
   # Enable/disable services
   storm_nimbus_enabled: true

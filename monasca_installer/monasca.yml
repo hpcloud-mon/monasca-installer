@@ -30,6 +30,10 @@
     - name: Update django application call
       lineinfile: dest=/usr/share/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi
         regexp='application = django.core.*' line='application = django.core.wsgi.get_wsgi_application()'
+    - name: Update cli
+      pip: name=python-monascaclient state=latest
+      tags:
+        - cli
 
 - name: Install Monasca Thresh
   hosts: monasca_master

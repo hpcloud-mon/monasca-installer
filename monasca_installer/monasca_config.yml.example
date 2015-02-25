@@ -107,7 +107,7 @@ all_config:
   # keystone_host is the host that has keystone installed
   keystone_host: 192.168.10.5
   keystone_project: test
-  keystone_project_admin: monasca-agent
+  keystone_project_admin: mini-mon
   keystone_project_admin_password: password
   keystone_monasca_agent_password: password
   keystone_url: http://{{keystone_host}}:35357/v3

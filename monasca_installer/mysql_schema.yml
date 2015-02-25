@@ -2,4 +2,4 @@
   hosts: mysql_host
   sudo: yes
   roles:
-    - {role: monasca-schema, influxdb_schema_enabled: false, kafka_topics_enabled: false, mysql_schema_enabled: true, tags: [schema]}
+    - {role: monasca-schema, influxdb_schema_enabled: false, kafka_topics_enabled: false, mysql_schema_enabled: true, winchester_schema_enabled: true, tags: [schema]}

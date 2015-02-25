@@ -184,6 +184,8 @@ master_config:
     transformed-events: { replicas: 3, partitions: 12 }
     alarm-state-transitions: { replicas: 3, partitions: 12 }
     alarm-notifications: { replicas: 3, partitions: 12 }
+  # Leave undefined if there is no root password for mysql
+  mysql_admin_password: password
 
   # Other settings
   influxdb:

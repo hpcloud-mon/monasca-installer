@@ -1,3 +1,17 @@
+- name: Install python/pip prerequisites
+  hosts: monasca
+  sudo: yes
+  tasks:
+    - name: Install python setup tools
+      apt: name=python-setuptools state=present
+    - name: Install pip from easy_install
+      easy_install: name=pip
+    - name: Install packages to allow pip to compile extensions as needed
+      apt: name={{item}} state=present
+      with_items:
+        - python-dev
+        - libssl-dev
+
 - name: Install monasca keystone roles and endpoint into keystone
   hosts: monasca_master
   sudo: yes
@@ -11,16 +25,6 @@
   tasks:
     - name: Install postfix, needed by notification engine
       apt: name=postfix state=present
-    - name: Install python setup tools
-      apt: name=python-setuptools state=present
-    - name: Install pip from easy_install
-      easy_install: name=pip
-    - name: Install packages to allow pip to compile extensions as needed
-      apt: name={{item}} state=present
-      with_items:
-        - python-dev
-        - libssl-dev
-        - libcrypto++-dev
   roles:
     - {role: zookeeper, tags: [zookeeper]}
     - {role: kafka, tags: [kafka]}

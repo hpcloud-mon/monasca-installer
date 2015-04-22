@@ -96,8 +96,14 @@ all_config:
   keystone_monasca_agent_password: password
   keystone_url: http://{{keystone_host}}:35357/v3
   keystone_users:
-    mini-mon: {password: "{{keystone_project_admin_password}}", role: monasca-user, project: "{{keystone_project}}"}
-    monasca-agent: {password: "{{keystone_monasca_agent_password}}", role: monasca-agent, project: "{{keystone_project}}"}
+    - username: mini-mon
+      password: "{{keystone_project_admin_password}}"
+      role: monasca-user
+      project: "{{keystone_project}}"
+    - username: monasca-agent
+      password: "{{keystone_monasca_agent_password}}"
+      role: monasca-agent
+      project: "{{keystone_project}}"
 
 monitored_services:
   # Hosts by service to install the monasca-agent.  One agent is installed per host.

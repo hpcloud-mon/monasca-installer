@@ -105,9 +105,9 @@ class AnsibleConfigGen(object):
             if service['service'] != 'monasca':
                 # skip the monasca group vars, it already exists
                 if service['service'] == 'multi-service':
-                    agent_config['monasca_agent']['service'] = ""
+                    agent_config['monasca_agent_service'] = ""
                 else:
-                    agent_config['monasca_agent']['service'] = service['service']
+                    agent_config['monasca_agent_service'] = service['service']
                 self.save_group(agent_config, service['service'])
 
         # Build the files in host_vars/

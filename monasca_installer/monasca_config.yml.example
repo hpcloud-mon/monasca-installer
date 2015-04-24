@@ -165,7 +165,7 @@ smtp_host: localhost
 wsrep_cluster_name: monasca
 
 influxdb_replication_factor: 3
-influxdb_version: 0.9.0-rc
+influxdb_version: 0.9.0-rc27
 influxdb_raft_port: 9090
 influxdb_hostname: "{{ inventory_hostname }}"
 

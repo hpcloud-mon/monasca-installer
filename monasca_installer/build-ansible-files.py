@@ -67,7 +67,7 @@ class AnsibleConfigGen(object):
             config[key] = ""
         config['zookeeper_servers'] = {}
         config['wsrep_cluster_hosts'] = []
-        workers_config['influxdb']['seed_servers'] = []
+        workers_config['influxdb']['join_urls'] = []
 
         # Build required host lists out of 'hosts'
         for host in hosts:
@@ -81,8 +81,8 @@ class AnsibleConfigGen(object):
 
             config['zookeeper_servers'][host['internal_ip']] = host['kafka_id']
             config['wsrep_cluster_hosts'].append(host['internal_ip'])
-            workers_config['influxdb']['seed_servers'].append("{}:{}".format(host['internal_ip'],
-                                                                             config['influxdb_raft_port']))
+            workers_config['influxdb']['join_urls'].append("http://{}:{}".format(host['internal_ip'],
+                                                                                 config['influxdb_raft_port']))
 
         # Remove leading commas in the text string lists
         for key in ['kafka_hosts', 'zookeeper_hosts']:
@@ -105,9 +105,9 @@ class AnsibleConfigGen(object):
             if service['service'] != 'monasca':
                 # skip the monasca group vars, it already exists
                 if service['service'] == 'multi-service':
-                    agent_config['monasca_agent']['service'] = ""
+                    agent_config['monasca_agent_service'] = ""
                 else:
-                    agent_config['monasca_agent']['service'] = service['service']
+                    agent_config['monasca_agent_service'] = service['service']
                 self.save_group(agent_config, service['service'])
 
         # Build the files in host_vars/

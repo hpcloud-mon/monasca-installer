@@ -133,11 +133,10 @@ hosts:
     kafka_id: 2
 
 #The monasca_agent for monasca
-monasca_agent:
-  user: monasca-agent
-  password: "{{keystone_monasca_agent_password}}"
-  project: "{{keystone_project}}"
-  service: monitoring
+monasca_agent_user: monasca-agent
+monasca_agent_password: "{{keystone_monasca_agent_password}}"
+monasca_agent_project: "{{keystone_project}}"
+monasca_agent_service: monitoring
 
 persister_influxdb_user: mon_persister
 persister_influxdb_password: password
@@ -147,7 +146,7 @@ wsrep_node_name: '{{inventory_hostname}}'
 wsrep_sst_receive_address: '{{inventory_hostname}}'
 
 influxdb_replication_factor: 3
-influxdb_version: 0.8.1
+influxdb_version: 0.9.0-rc27
 influxdb_raft_port: 9090
 influxdb_hostname: "{{ inventory_hostname }}"
 
@@ -196,10 +195,9 @@ workers_config:
     replication_factor: '{{influxdb_replication_factor}}'
 
 agent_config:
-  monasca_agent:
   # The service will be populated by monitored_services service.
   # The monasca_agent dictionary is output in the service group_var file.
-    user: monasca-agent
-    password: "{{keystone_monasca_agent_password}}"
-    project: "{{keystone_project}}"
-    service: monitoring
+  monasca_agent_user: monasca-agent
+  monasca_agent_password: "{{keystone_monasca_agent_password}}"
+  monasca_agent_project: "{{keystone_project}}"
+  monasca_agent_service: monitoring

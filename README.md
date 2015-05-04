@@ -15,7 +15,7 @@ git clone https://github.com/hpcloud-mon/monasca-installer
 #### Linux (Ubuntu)
 ```
 sudo pip install ansible  (using ansible version >= 1.8)
-cd monasca_installer/monasca_installer
+cd monasca-installer/monasca_installer
 ansible-galaxy install -r ../requirements.yml -p ./roles -f
 ```
 
@@ -27,7 +27,7 @@ ansible-galaxy install -r ../requirements.yml -p ./roles -f
 ## Run build-ansible-files.py 
 ```
 cd monasca_installer
-cp monasca_config.yaml.example monasca_config.yml
+cp monasca_config.yml.example monasca_config.yml
 python build-ansible-files.py monasca_config.yml
 ```
 

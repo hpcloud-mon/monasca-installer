@@ -1,11 +1,14 @@
 - name: Install python/pip prerequisites
   hosts: monasca
   sudo: yes
+
   tasks:
     - name: Install python setup tools
       apt: name=python-setuptools state=present
     - name: Install pip from easy_install
       easy_install: name=pip
+    - name: Virtualenv from pypi
+      pip: name=virtualenv  extra_args='--upgrade' state=present
     - name: Install packages to allow pip to compile extensions as needed
       apt: name={{item}} state=present
       with_items:
@@ -27,6 +30,13 @@
       apt: name=postfix state=present
   roles:
     - {role: zookeeper, tags: [zookeeper]}
-    - {role: kafka, tags: [kafka]}
-    - {role: influxdb, tags: [influxdb]}
+    - {role: kafka, tags: [kafka], verify: "{{ inventory_hostname==groups['monasca'][ (groups['monasca'] | length) - 1 ] }}" }
+#    - {role: influxdb, tags: [influxdb], verify: "{{ inventory_hostname==groups['monasca'][ (groups['monasca'] | length) - 1 ] }}" }
+    - {role: influxdb, when: database_type == 'influxdb', tags: [influxdb], verify: False }
+    - { role: cassandra, when: database_type == 'cassandra', tags: [cassandra],
+        cassandra_bind_address: "{{ inventory_hostname }}",
+        cassandra_seeds: "{{ groups.monasca }}",
+        cassandra_opscenter_host: "{{ groups['monasca'][0] }}",
+        verify: "{{ inventory_hostname==groups['monasca'][ (groups['monasca'] | length) - 1 ] }}"
+      }
     - {role: percona, when: mysql_install_on_monasca, tags: [mysql, percona]}

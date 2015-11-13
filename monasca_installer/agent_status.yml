@@ -3,7 +3,7 @@
   gather_facts: no
   tasks:
     - name: Run monasca-collector info to find any problems on the host
-      command: monasca-collector info
+      command: "{{ monasca_virtualenv_dir }}/bin/monasca-collector info"
       register: info_result
     - debug: var=info_result
       when: info_result |failed

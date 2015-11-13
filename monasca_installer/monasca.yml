@@ -10,9 +10,12 @@
        mysql_password: "{{api_mysql_password}}",
        tags: [api]}
     - {role: monasca-persister,
+       influxdb_host: "{{ groups['monasca'][0] }}",
        influxdb_user: "{{persister_influxdb_user}}",
        influxdb_password: "{{persister_influxdb_password}}",
        monasca_persister_consumer_id: "{{ kafka_id }}",
+       cassandra_user: "{{api_cassandra_user}}",
+       cassandra_password: "{{api_cassandra_password}}",
        tags: [persister]}
     - {role: monasca-notification,
        mysql_user: "{{notification_mysql_user}}",

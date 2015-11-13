@@ -18,7 +18,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.synced_folder "~/", "/vagrant_home"
+  # config.vm.synced_folder "~/", "/vagrant_home"
 
   # One vm just for devstack (to access the UI)
   config.vm.define "devstack" do |ds|
@@ -33,30 +33,33 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Vms for monasca
   config.vm.define "monasca1" do |mm|
+    mm.ssh.insert_key = false
     mm.vm.hostname = 'monasca1'
     mm.vm.box = "ubuntu/trusty64"
     mm.vm.network :private_network, ip: "192.168.10.6"
     mm.vm.provider "virtualbox" do |vb|
-      vb.memory = 6144 
-      vb.cpus = 4
+      vb.memory = 3072
+      vb.cpus = 2
     end
   end
   config.vm.define "monasca2" do |mm|
+    mm.ssh.insert_key = false
     mm.vm.hostname = 'monasca2'
     mm.vm.box = "ubuntu/trusty64"
     mm.vm.network :private_network, ip: "192.168.10.7"
     mm.vm.provider "virtualbox" do |vb|
-      vb.memory = 6144 
-      vb.cpus = 4
+      vb.memory = 3072
+      vb.cpus = 2
     end
   end
   config.vm.define "monasca3" do |mm|
+    mm.ssh.insert_key = false
     mm.vm.hostname = 'monasca3'
     mm.vm.box = "ubuntu/trusty64"
     mm.vm.network :private_network, ip: "192.168.10.8"
     mm.vm.provider "virtualbox" do |vb|
-      vb.memory = 6144 
-      vb.cpus = 4
+      vb.memory = 3072
+      vb.cpus = 2
     end
   end
 

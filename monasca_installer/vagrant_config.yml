@@ -54,6 +54,8 @@ mysql_host: 192.168.10.6
 api_region: vagrant-useast
 api_influxdb_user: mon_api
 api_influxdb_password: password
+api_cassandra_user: mon_api
+api_cassandra_password: password
 
 # When mysql on external host from monasca, set this to false
 mysql_install_on_monasca: true

@@ -28,3 +28,5 @@
   name: zookeeper
 - src: https://github.com/tkuhlman/ansible-influxdb
   name: influxdb
+- src: https://github.com/hpcloud-mon/ansible-cassandra
+  name: cassandra
